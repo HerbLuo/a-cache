@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "es5",
+    "outDir": "./lib/",
+    "lib": ["ES2015"],
+    "module": "commonjs",
+    "strict": true,
+    "noImplicitThis": false,
+    "experimentalDecorators": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

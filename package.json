@@ -1,0 +1,26 @@
+{
+  "name": "a-cache",
+  "version": "1.0.0",
+  "description": "a tool for caching and discache the result of a call.  ",
+  "main": "lib/index.js",
+  "typings": "index.ts",
+  "files": [
+    "lib",
+    "src",
+    "index.ts"
+  ],
+  "scripts": {
+    "dist": "rollup -c ./rollup.config.js",
+    "dist:dev": "rollup -c --watch ./rollup.config.js",
+    "test": "ava"
+  },
+  "author": "herbluo",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.0.0-beta.51",
+    "ava": "1.0.0-beta.6",
+    "rollup": "^0.62.0",
+    "rollup-plugin-typescript": "^0.8.1",
+    "typescript": "^2.9.2"
+  }
+}
