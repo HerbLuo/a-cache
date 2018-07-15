@@ -54,6 +54,7 @@ test('default disable cache', async t => {
   t.is(times, 1)
   await api.mergeData()
   t.is(times, 1)
+  console.log('---------------------')
   t.is(await api.fetchData(), RESULT_STRING_0, 'twice call')
   t.is(times, 2)
 })

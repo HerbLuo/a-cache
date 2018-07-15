@@ -9,9 +9,13 @@ interface DisableCacheConfig {
     params2key?: Function | string;
 }
 
-type DisableCacheArgType = string | string[] | DisableCacheConfig | DisableCacheConfig[]
+type DisableCacheArgType =
+    string
+    | string[]
+    | DisableCacheConfig
+    | DisableCacheConfig[]
 
-function formatDisableCacheConfig (config: DisableCacheArgType)
+function formatDisableCacheConfig(config: DisableCacheArgType)
     : DisableCacheConfig[] {
     if (isString(config)) {
         return [{key: config}]
@@ -37,56 +41,57 @@ export function disableCache(conf?: DisableCacheArgType) {
         // 原有方法
         const oldFunc = descriptor.get || descriptor.value;
 
-        if (!conf) {
-            logger('deleting all cache in', target.constructor.name);
-            l1.delete(target.constructor.name);
-            return
-        }
-
-        type ConfigAndDataTuple = [DisableCacheConfig, L3ObjectInstanceCache|void]
-
-        const instanceMapParamsMapResults: Array<ConfigAndDataTuple> =
-            configs.map(config => {
-                const l2 = l1.get(target.constructor.name);
-                const l3 = l2 && l2.get(methodName);
-                return <ConfigAndDataTuple>[ config, l3 ];
-            });
+        type ConfigAndDataTuple = [DisableCacheConfig, L3ObjectInstanceCache | void]
 
         descriptor.value = function (...args: any[]) {
-            instanceMapParamsMapResults.forEach(([
-                                                     config, instanceMapParamsMapResult]: ConfigAndDataTuple) => {
-                // 没有该缓存或者出错
-                if (!instanceMapParamsMapResult) {
-                    return
-                }
+            const instanceMapParamsMapResults: Array<ConfigAndDataTuple> =
+                configs.map(config => {
+                    const l2 = l1.get(target.constructor.name);
+                    const l3 = l2 && l2.get(methodName);
+                    return <ConfigAndDataTuple>[config, l3];
+                });
 
-                // 以实例作为 key
-                const this2key = config.this2Key
-                    && config.this2Key.apply(this, this);
+            instanceMapParamsMapResults.forEach(
+                ([
+                     config, instanceMapParamsMapResult]: ConfigAndDataTuple) => {
 
-                // 没有配置参数
-                if (!config.params2key) {
-                    instanceMapParamsMapResult.delete(this2key || this)
-                    return
-                }
+                    if (!conf) {
+                        l1.delete(target.constructor.name);
+                        return
+                    }
 
-                // 获取第三层 第三层的key为 JSON.stringify(参数)
-                const paramsMapResult = instanceMapParamsMapResult
-                    .get(this2key || this);
+                    // 没有该缓存或者出错
+                    if (!instanceMapParamsMapResult) {
+                        return
+                    }
 
-                // 未找到该组数据，返回
-                if (!paramsMapResult) {
-                    return
-                }
+                    // 以实例作为 key
+                    const this2key = config.this2Key
+                        && config.this2Key.apply(this, this);
 
-                // 以参数作为key
-                const params2key = typeof config.params2key === 'function'
-                    ? config.params2key && config.params2key.apply(this, args)
-                    : config.params2key;
+                    // 没有配置参数
+                    if (!config.params2key) {
+                        instanceMapParamsMapResult.delete(this2key || this)
+                        return
+                    }
 
-                // 删除缓存的值
-                paramsMapResult.delete(params2key);
-            });
+                    // 获取第三层 第三层的key为 JSON.stringify(参数)
+                    const paramsMapResult = instanceMapParamsMapResult
+                        .get(this2key || this);
+
+                    // 未找到该组数据，返回
+                    if (!paramsMapResult) {
+                        return
+                    }
+
+                    // 以参数作为key
+                    const params2key = typeof config.params2key === 'function'
+                        ? config.params2key && config.params2key.apply(this, args)
+                        : config.params2key;
+
+                    // 删除缓存的值
+                    paramsMapResult.delete(params2key);
+                });
 
             return oldFunc.apply(this, args);
         };

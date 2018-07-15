@@ -40,12 +40,11 @@ export function aCache (conf?: ACacheConfig | string) {
     return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
         // 原有方法
         const oldFunc = descriptor.get || descriptor.value;
-
-        // 以类名，方法名作为 key
-        const l2 = l1.getOrCreate(config.key || target.constructor.name);
-        const l3 = l2.getOrCreate(config.key || methodName);
-
         const newFunc = function (...args: any[]) {
+            // 以类名，方法名作为 key
+            const l2 = l1.getOrCreate(config.key || target.constructor.name);
+            const l3 = l2.getOrCreate(config.key || methodName);
+
             // 以实例作为 key
             const this2key = config.this2Key
                 && config.this2Key.apply(this, this);
