@@ -22,3 +22,7 @@ export interface WeakMapLikeConstructor {
     new (): WeakMapLike<object, any>;
     new <K extends object, V>(entries?: ReadonlyArray<[K, V]>): WeakMapLike<K, V>;
 }
+
+export interface GetOrCreate<K, V> {
+    getOrCreate(key: K): V;
+}

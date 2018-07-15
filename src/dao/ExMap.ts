@@ -11,7 +11,6 @@ let couldConsume = true;
 
 export abstract class ExMap<K, V> implements MapLike<K, V> {
     private _map?: MapLike<K, V>;
-    abstract getOrCreate(key: K): V;
 
     set(key: K, value: V): this {
         if (!this._map) {
@@ -44,10 +43,8 @@ export abstract class ExMap<K, V> implements MapLike<K, V> {
 }
 
 type ExWeakMapKeyTypeExcludeObject = string | number | void | symbol;
-type ExWeakMapKeyType = object | ExWeakMapKeyTypeExcludeObject;
+export type ExWeakMapKeyType = object | ExWeakMapKeyTypeExcludeObject;
 export abstract class ExWeakMap<V> implements WeakMapLike<{}, V> {
-    abstract getOrCreate(key: ExWeakMapKeyType): V;
-
     private _weakMap?: WeakMapLike<{}, V>;
     private _keyReference: Map<ExWeakMapKeyType, {}> = new Map();
 

@@ -12,7 +12,7 @@
   "scripts": {
     "dist": "rollup -c ./rollup.config.js",
     "dist:dev": "rollup -c --watch ./rollup.config.js",
-    "test": "ava"
+    "test": "npm run dist && ava"
   },
   "author": "herbluo",
   "license": "MIT",

@@ -1,1 +1,2 @@
-export {aCache, disableCache} from './src/aCache'
+export {aCache} from './src/aCache'
+export {disableCache} from './src/disableCache'
