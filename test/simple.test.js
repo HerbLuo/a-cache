@@ -58,9 +58,6 @@ test('default disable cache', async t => {
   t.is(times, 2)
 })
 
-// multiple class
-test('m')
-
 // for static functions
 
 // for get and set
