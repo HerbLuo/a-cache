@@ -1,7 +1,7 @@
 {
-  "name": "a-cache",
-  "version": "1.0.0",
-  "description": "a tool for caching and discache the result of a call.  ",
+  "name": "@closx/a-cache",
+  "version": "0.0.1-beta.1",
+  "description": "a tool for cache and discache the result of a call.  ",
   "main": "lib/index.js",
   "typings": "index.ts",
   "files": [
@@ -22,5 +22,15 @@
     "rollup": "^0.62.0",
     "rollup-plugin-typescript": "^0.8.1",
     "typescript": "^2.9.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HerbLuo/a-cache.git"
+  },
+  "keywords": [
+    "cache",
+    "disable",
+    "cache",
+    "decorators"
+  ]
 }
