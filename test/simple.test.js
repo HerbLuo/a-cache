@@ -58,6 +58,4 @@ test('default disable cache', async t => {
   t.is(times, 2)
 })
 
-// for get and set
-
 // config

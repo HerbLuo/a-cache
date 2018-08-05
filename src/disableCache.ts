@@ -1,7 +1,7 @@
 import {isArray, isString} from "./utils/utils";
-import {l1} from "./dao/L1ClassMetaCache";
-import {L3ObjectInstanceCache} from "./dao/L3ObjectInstanceCache";
-import {logger} from "./utils/helper";
+import {l1} from "./ds/L1ClassMetaCache";
+import {L3ObjectInstanceCache} from "./ds/L3ObjectInstanceCache";
+import {getLogger} from "./utils/logger";
 
 interface DisableCacheConfig {
     key?: string;
@@ -35,7 +35,10 @@ function formatDisableCacheConfig(config: DisableCacheArgType)
 }
 
 export function disableCache(conf?: DisableCacheArgType) {
+    const logger = getLogger();
     let configs: DisableCacheConfig[] = formatDisableCacheConfig(conf || {});
+
+    logger('disable a cache\'s config is: ', configs);
 
     return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
         // 原有方法
@@ -44,10 +47,12 @@ export function disableCache(conf?: DisableCacheArgType) {
         type ConfigAndDataTuple = [DisableCacheConfig, L3ObjectInstanceCache | void]
 
         descriptor.value = function (...args: any[]) {
+            logger('disableACache : %s : %s : %o', target.constructor.name, methodName, l1);
+
             const instanceMapParamsMapResults: Array<ConfigAndDataTuple> =
                 configs.map(config => {
-                    const l2 = l1.get(target.constructor.name);
-                    const l3 = l2 && l2.get(methodName);
+                    const l2 = l1.get(config.key || target.constructor.name);
+                    const l3 = l2 && l2.get(config.key || methodName);
                     return <ConfigAndDataTuple>[config, l3];
                 });
 
@@ -71,7 +76,7 @@ export function disableCache(conf?: DisableCacheArgType) {
 
                     // 没有配置参数
                     if (!config.params2key) {
-                        instanceMapParamsMapResult.delete(this2key || this)
+                        instanceMapParamsMapResult.delete(this2key || this);
                         return
                     }
 

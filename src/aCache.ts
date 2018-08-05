@@ -1,6 +1,5 @@
-import {l1} from "./dao/L1ClassMetaCache";
-
-const logger = console.log;
+import {l1} from "./ds/L1ClassMetaCache";
+import {getLogger} from "./utils/logger";
 
 interface ACacheConfig {
     // second?: number; // 默认无穷大
@@ -34,10 +33,13 @@ function formatConfig(config: string | ACacheConfig): ACacheConfig {
  */
 
 export function aCache (conf?: ACacheConfig | string) {
+    const logger = getLogger();
     // 格式化参数
     const  config: ACacheConfig = formatConfig(conf || {});
+    logger('config is: ', config);
 
     return (target: any, methodName: string, descriptor: PropertyDescriptor) => {
+        logger('aCache : %s : %s : %o', target.constructor.name, methodName, l1);
         // 原有方法
         const oldFunc = descriptor.get || descriptor.value;
         const newFunc = function (...args: any[]) {
