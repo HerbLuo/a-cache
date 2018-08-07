@@ -22,13 +22,16 @@ function formatDisableCacheConfig(config: DisableCacheArgType)
     }
 
     if (isArray(config)) {
+        const configs: Array<string | DisableCacheConfig> = config;
         if (config.length === 0) {
             throw new Error('参数错误')
         }
-        if (isString(config[0])) {
-            return (<string[]>config).map(it => ({key: it}))
-        }
-        return <DisableCacheConfig []>config
+        return configs.map((c) => {
+            if (isString(c)) {
+                return {key: c}
+            }
+            return c
+        })
     }
 
     return [config]
@@ -72,7 +75,7 @@ export function disableCache(conf?: DisableCacheArgType) {
 
                     // 以实例作为 key
                     const this2key = config.this2Key
-                        && config.this2Key.apply(this, this);
+                        && config.this2Key.call(this, this);
 
                     // 没有配置参数
                     if (!config.params2key) {

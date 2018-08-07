@@ -24,14 +24,7 @@ function formatConfig(config: string | ACacheConfig): ACacheConfig {
  * 当一个类中只有一个方法需要缓存时，不写 任何key参数是推荐的做法
  * 当一个类中有多个方法需要缓存时，不写 任何key参数或许同样可用（即便存在代码压缩，一般也都可用），但推荐写上全局唯一的key
  * 当一个需要缓存的方法的参数非常 “巨大”时，推荐使用 params2key 优化
- *
- * 缓存规则：
- * 只有当如下条件都相同时，数据才会从缓存读取
- * （类名 + 方法名）  +  当前对象的实例  +  JSON.stringify(参数)
- * （可用 key代替） （可用 this2key代替） （可用 params2key代替）
- *     Map              WeakMap             Map
  */
-
 export function aCache (conf?: ACacheConfig | string) {
     const logger = getLogger();
     // 格式化参数
@@ -49,7 +42,7 @@ export function aCache (conf?: ACacheConfig | string) {
 
             // 以实例作为 key
             const this2key = config.this2Key
-                && config.this2Key.apply(this, this);
+                && config.this2Key.call(this, this);
             const paramsMapResult = l3.getOrCreate(this2key || this);
 
             // 以参数作为key

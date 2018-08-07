@@ -57,7 +57,9 @@ test('with key option', async t => {
       times++
       return userPo[id]
     }
-    @aCache()
+    @aCache({
+      key: 'UserApiWithKeyOption:getUserIds'
+    })
     async getUserIds () {
       times++
       return Object.keys(userPo)
@@ -68,6 +70,12 @@ test('with key option', async t => {
       const oldUser = userPo[id]
       userPo[id] = Object.assign({}, oldUser, user)
     }
+    @disableCache(['UserApiWithKeyOption:getUserIds', {
+      key: 'UserApiWithKeyOption:getOne'
+    }])
+    async delete (userId) {
+      delete userPo[userId]
+    }
   }
 
   const userApi = new UserApiWithKeyOption()
@@ -76,16 +84,97 @@ test('with key option', async t => {
   t.is(times, 1)
   t.deepEqual(await userApi.getUserIds(), Object.keys(userPo))
   t.is(times, 2)
+
+  // merge
   await userApi.merge({id: userIdA, age: 18})
   t.is(times, 2)
   t.deepEqual(await userApi.getUserIds(), Object.keys(userPo))
   t.is(times, 2)
   t.deepEqual(await userApi.getOne(userIdA), userPo[userIdA])
   t.is(times, 3)
-  t.deepEqual(await userApi.getOne(userIdA), userPo[userIdA])
+
+  // delete
+  await userApi.delete(userIdA)
   t.is(times, 3)
+  t.deepEqual(await userApi.getUserIds(), Object.keys(userPo))
+  t.is(times, 4)
+  t.deepEqual(await userApi.getOne(userIdA), userPo[userIdA])
+  t.is(times, 5)
+  t.deepEqual(await userApi.getUserIds(), Object.keys(userPo))
+  t.is(times, 5)
+  t.deepEqual(await userApi.getOne(userIdA), userPo[userIdA])
+  t.is(times, 5)
 })
 
 test('with this-to-key options', async t => {
-  t.pass('TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+  let times = 0
+
+  const userPo = getUserPo()
+  class UserApiWithThis2KeyOption {
+    constructor (userId) {
+      this.userId = userId
+    }
+
+    @aCache({
+      key: 'UserApiWithThis2KeyOption:getOne',
+      this2Key: that => that.userId.toString() // 不可以返回object类型
+    })
+    async getSelfInfo () {
+      times++
+      return userPo[this.userId]
+    }
+
+    @aCache({
+      key: 'UserApiWithThis2KeyOption:getAll',
+      this2Key: that => 'single'
+    })
+    async getAll () {
+      times++
+      return Object.values(userPo)
+    }
+
+    @disableCache([{
+      key: 'UserApiWithThis2KeyOption:getAll',
+      this2Key: that => 'single'
+    }, {
+      key: 'UserApiWithThis2KeyOption:getOne',
+      this2Key: that => that.userId.toString()
+    }])
+    async merge (user) {
+      delete user.id
+      const id = this.userId
+      const oldUser = userPo[id]
+      userPo[id] = Object.assign({}, oldUser, user)
+    }
+  }
+
+  const userAApi = new UserApiWithThis2KeyOption(userIdA)
+  const userBApi = new UserApiWithThis2KeyOption(userIdB)
+  t.is(times, 0)
+  t.deepEqual(await userAApi.getSelfInfo(), userPo[userIdA])
+  t.is(times, 1)
+  t.deepEqual(await userAApi.getSelfInfo(), userPo[userIdA])
+  t.is(times, 1)
+  t.deepEqual(await userBApi.getSelfInfo(), userPo[userIdB])
+  t.is(times, 2)
+  t.deepEqual(await userBApi.getSelfInfo(), userPo[userIdB])
+  t.is(times, 2)
+
+  t.deepEqual(await userAApi.getAll(), Object.values(userPo))
+  t.is(times, 3)
+  t.deepEqual(await userAApi.getAll(), Object.values(userPo))
+  t.is(times, 3)
+  t.deepEqual(await userBApi.getAll(), Object.values(userPo))
+  t.is(times, 3)
+
+  await userAApi.merge({age: 12})
+  t.is(times, 3)
+  t.is(await userAApi.getSelfInfo().then(info => info.age), 12)
+  t.is(times, 4)
+  t.is(await userAApi.getSelfInfo().then(info => info.age), 12)
+  t.is(times, 4)
+  t.deepEqual(await userBApi.getAll(), Object.values(userPo))
+  t.is(times, 5)
+  t.deepEqual(await userAApi.getAll(), Object.values(userPo))
+  t.is(times, 5)
 })
