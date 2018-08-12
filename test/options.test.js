@@ -77,6 +77,17 @@ test('with key option', async t => {
       delete userPo[userId]
     }
   }
+  class UserApi {
+    constructor (userId) {
+      this.userId = userId
+    }
+
+    @disableCache('UserApiWithKeyOption:getOne')
+    async merge (user) {
+      const oldUser = userPo[this.userId]
+      userPo[this.userId] = Object.assign({}, oldUser, user)
+    }
+  }
 
   const userApi = new UserApiWithKeyOption()
   t.is(times, 0)
@@ -93,17 +104,32 @@ test('with key option', async t => {
   t.deepEqual(await userApi.getOne(userIdA), userPo[userIdA])
   t.is(times, 3)
 
-  // delete
-  await userApi.delete(userIdA)
-  t.is(times, 3)
-  t.deepEqual(await userApi.getUserIds(), Object.keys(userPo))
+  // merge 2
+  t.is(await userApi.getOne(userIdB), userPo[userIdB])
   t.is(times, 4)
-  t.deepEqual(await userApi.getOne(userIdA), userPo[userIdA])
+  t.is(await userApi.getOne(userIdB), userPo[userIdB])
+  t.is(times, 4)
+  const userApi2 = new UserApi(userIdB)
+  await userApi2.merge({age: 8})
+  t.is(times, 4)
+  t.is(await userApi.getOne(userIdB).then(({age}) => age), 8)
   t.is(times, 5)
+  t.is(await userApi.getOne(userIdB), userPo[userIdB])
+  t.is(times, 5)
+
+  // delete
+  t.deepEqual(await userApi.getOne(userIdA), userPo[userIdA])
+  t.is(times, 6)
+  await userApi.delete(userIdA)
+  t.is(times, 6)
   t.deepEqual(await userApi.getUserIds(), Object.keys(userPo))
-  t.is(times, 5)
+  t.is(times, 7)
   t.deepEqual(await userApi.getOne(userIdA), userPo[userIdA])
-  t.is(times, 5)
+  t.is(times, 8)
+  t.deepEqual(await userApi.getUserIds(), Object.keys(userPo))
+  t.is(times, 8)
+  t.deepEqual(await userApi.getOne(userIdA), userPo[userIdA])
+  t.is(times, 8)
 })
 
 test('with this-to-key options', async t => {
@@ -133,10 +159,7 @@ test('with this-to-key options', async t => {
       return Object.values(userPo)
     }
 
-    @disableCache([{
-      key: 'UserApiWithThis2KeyOption:getAll',
-      this2Key: that => 'single'
-    }, {
+    @disableCache(['UserApiWithThis2KeyOption:getAll', {
       key: 'UserApiWithThis2KeyOption:getOne',
       this2Key: that => that.userId.toString()
     }])
@@ -177,4 +200,14 @@ test('with this-to-key options', async t => {
   t.is(times, 5)
   t.deepEqual(await userAApi.getAll(), Object.values(userPo))
   t.is(times, 5)
+})
+
+test('with params-to-key options', async t => {
+  let times = 0
+
+  const userPo = getUserPo()
+  class UserApiWithParams2KeyOptions {
+
+  }
+  t.pass()
 })

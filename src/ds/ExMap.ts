@@ -45,64 +45,74 @@ export abstract class ExMap<K, V> implements MapLike<K, V> {
 type ExWeakMapKeyTypeExcludeObject = string | number | void | symbol;
 export type ExWeakMapKeyType = object | ExWeakMapKeyTypeExcludeObject;
 export abstract class ExWeakMap<V> implements WeakMapLike<{}, V> {
-    private _weakMap?: WeakMapLike<{}, V>;
-    private _keyReference: Map<ExWeakMapKeyType, {}> = new Map();
+    private weakMap?: WeakMapLike<{}, V>;
+    private keyReference: Map<ExWeakMapKeyType, {}> = new Map();
+    private cleared: boolean = false;
+    private CouldClearWeakMap = class {
+
+    };
 
     private getRelKey (exKey: ExWeakMapKeyType): {} | void {
         if (typeof exKey === 'object') {
             return exKey;
         }
-        return this._keyReference.get(exKey);
+        return this.keyReference.get(exKey);
     }
 
     private getRelKeyAndCreateIfNone (exKey: ExWeakMapKeyType): {} {
         let nKey = this.getRelKey(exKey);
         if (!nKey) {
             nKey = {};
-            this._keyReference.set(exKey, nKey);
+            this.keyReference.set(exKey, nKey);
         }
         return nKey;
     }
 
     delete(key: ExWeakMapKeyType): boolean {
-        if (!this._weakMap) {
+        if (!this.weakMap) {
             return false
         }
         const relKey = this.getRelKey(key);
         if (!relKey) {
             return false
         }
-        return this._weakMap.delete(relKey);
+        return this.weakMap.delete(relKey);
     }
 
     has(key: ExWeakMapKeyType): boolean {
-        if (!this._weakMap) {
+        if (!this.weakMap) {
             return false
         }
         const relKey = this.getRelKey(key);
         if (!relKey) {
             return false
         }
-        return this._weakMap.has(relKey);
+        return this.weakMap.has(relKey);
     }
 
     get(key: ExWeakMapKeyType): V | undefined {
-        if (!this._weakMap) {
+        if (!this.weakMap) {
             return undefined
         }
         const relKey = this.getRelKey(key);
         if (!relKey) {
             return undefined
         }
-        return this._weakMap.get(relKey);
+        return this.weakMap.get(relKey);
     }
+
     set(key: ExWeakMapKeyType, value: V): this {
-        if (!this._weakMap) {
-            this._weakMap = new consumeWeakMap();
+        if (!this.weakMap) {
+            this.weakMap = new consumeWeakMap();
             couldConsume = false;
         }
-        this._weakMap.set(this.getRelKeyAndCreateIfNone(key), value);
+        this.weakMap.set(this.getRelKeyAndCreateIfNone(key), value);
         return this
+    }
+
+    clear(): void {
+        this.weakMap = undefined;
+        this.keyReference.clear();
     }
 }
 

@@ -79,7 +79,12 @@ export function disableCache(conf?: DisableCacheArgType) {
 
                     // 没有配置参数
                     if (!config.params2key) {
-                        instanceMapParamsMapResult.delete(this2key || this);
+                        if (this2key) {
+                            instanceMapParamsMapResult.delete(this2key);
+                        } else {
+                            instanceMapParamsMapResult.clear()
+                        }
+
                         return
                     }
 
