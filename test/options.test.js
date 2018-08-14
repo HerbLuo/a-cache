@@ -207,7 +207,54 @@ test('with params-to-key options', async t => {
 
   const userPo = getUserPo()
   class UserApiWithParams2KeyOptions {
-
+    @aCache({
+      key: 'UserApiWithParams2KeyOptions:getOne',
+      params2key: id => id
+    })
+    async getOne (id) {
+      times++
+      return userPo[id]
+    }
+    @disableCache({
+      key: 'UserApiWithParams2KeyOptions:getOne',
+      params2key: user => user.id
+    })
+    async merge (user) {
+      const id = user.id
+      const oldUser = userPo[id]
+      userPo[id] = Object.assign({}, oldUser, user)
+    }
   }
-  t.pass()
+
+  const api = new UserApiWithParams2KeyOptions()
+  t.is(times, 0)
+  t.deepEqual(await api.getOne(userIdA), userPo[userIdA])
+  t.is(times, 1)
+  t.deepEqual(await api.getOne(userIdA), userPo[userIdA])
+  t.is(times, 1)
+  t.deepEqual(await api.getOne(userIdB), userPo[userIdB])
+  t.is(times, 2)
+  t.deepEqual(await api.getOne(userIdB), userPo[userIdB])
+  t.is(times, 2)
+  await api.merge({id: userIdA, age: 23})
+  t.is(times, 2)
+  t.deepEqual(await api.getOne(userIdB), userPo[userIdB])
+  t.is(times, 2)
+  t.deepEqual(await api.getOne(userIdA), userPo[userIdA])
+  t.is(times, 3)
+  t.deepEqual(await api.getOne(userIdA), userPo[userIdA])
+  t.is(times, 3)
+  await api.merge({id: userIdB, age: 23})
+  t.is(times, 3)
+  t.deepEqual(await api.getOne(userIdA), userPo[userIdA])
+  t.is(times, 3)
+  t.deepEqual(await api.getOne(userIdB), userPo[userIdB])
+  t.is(times, 4)
+  t.deepEqual(await api.getOne(userIdB), userPo[userIdB])
+  t.is(times, 4)
+  await api.merge({id: userIdC, age: 99})
+  t.is(times, 4)
+  t.deepEqual(await api.getOne(userIdA), userPo[userIdA])
+  t.is(times, 4)
+  t.deepEqual(await api.getOne(userIdB), userPo[userIdB])
 })
