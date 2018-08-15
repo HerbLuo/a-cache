@@ -1,49 +1,46 @@
-二：使用方法
+一：简介
+1. a-cache 是一个利用注解实现的缓存工具
+2. 他的特点是非常轻量级，不影响现有代码的逻辑结构
+3. 但a-cache 推荐在项目中专门分离api层（注1）
+
+安装方式：  
+```npm i a-cache --save```  
+或  
+```yarn add a-cache```
+
+二：常规用法
 1. 最简单的缓存  
-对于一个特别耗时的操作，我们可以对它进行缓存
-
+    
+    如：下方fetchAllUser 在缓存失效前，不会多次发送请求
     ```javascript
-    import aCache from '@herbluo/acache'
+    import { aCache } from 'a-cache'
 
     class UserApi {
       @aCache()
       fetchAllUser () {
-        console.log('fetchAllUser is running')
-        return fetch('....').then(it => it.json())
+        return fetch('....').then(toJson)
       }
     }
  
     const api = new UserApi()
     export default api
     ```
-    此时运行如下代码  
-    ```
-    console.log(api.fetchAllUser() === api.fetchAllUser())
-    ``` 
-    控制台会输出
-    ```
-    "fetchAllUser is running"
-    true
-    ```
+    这种缓存的方法，在代码压缩后仍然正常使用，但要注意以下情况，见 4.2
     
-2. 取消某种缓存  
-当我们修改了一组数据后，需要取消缓存
-
+2. 手动取消缓存  
+    如： 如下方mergeUsers调用后（前），会清除当前实例下的所有缓存数据
     ```javascript
-    import {aCache, disableCache} from '@herbluo/acache'
+    import { aCache, disableCache } from 'a-cache'
  
     class UserApi {
       @aCache()
       fetchAllUser () {
-        return fetch('....').then(it => it.json())
+        return fetch('....').then(toJson)
       }
    
-      /**
-       * 默认会把 user contactsApi
-       */
       @disableCache()  
-      mergeUsers(users) {
-        // 修改用户信息 .....
+      mergeUser(user) {
+        return fetch('....').then(toJson)
       }
     }
  
@@ -51,40 +48,37 @@
     export default api
     ```
     
-3. 指定 key  
-指定取消哪种缓存, xxx无需
-
+3. 使用`key`来指定取消某种缓存  
+    如：下方的mergeUser调用后，只会清空fetchAllUsers产生的缓存（因为他们的key都是UserApi:fetchAllUsers），
+    而fetchUserIds产生的缓存，并不会删除。
     ```javascript
-    import {aCache, disableCache} from '@herbluo/acache'
+    import { aCache, disableCache } from 'a-cache'
  
     class UserApi {
       @aCache()
-      fetchAllUser () {
-        return fetch('....').then(it => it.json())
+      fetchUserIds () {
+        return fetch('....').then(toJson)
       }
    
-      @aCache('UserApi:fetchUserDetail')
-      fetchUserDetail (id) {
-        return fetch('...').then(it => it.json())
+      @aCache('UserApi:fetchAllUsers')
+      fetchAllUsers () {
+        return fetch('....').then(toJson)
       }
    
-     /**
-      * 该操作只会清空 fetchUserDetail下的缓存
-      */
-      @disableCache('UserApi:fetchUserDetail')  
-      mergeUserDetail(id, userDetail) {
-        // 修改用户详细信息 .....
+      @disableCache('UserApi:fetchAllUsers')  
+      mergeUser(user) {
+        return fetch('....').then(toJson)
       }
     }
  
     const api = new UserApi()
     export default api
     ```
-    
-4. 指定id `params2key`  
-更精确地指定取消哪次缓存
+
+三：更多用法
+1. 较为完整的用法  
     ```javascript
-    import {aCache, disableCache} from '@herbluo/acache'
+    import { aCache, disableCache } from 'a-cache'
  
     class UserApi {
       @aCache('UserApi:fetchUserDetail')
@@ -116,10 +110,13 @@
     const api = new UserApi()
     export default api
     ```
+更多场景（多个类，多个实例下的相互作用等）见测试用例。
 
-5. 指定实例 `this2key`（该操作慎用，除非你阅读过源代码或知道你现在在做什么）  
-主要针对多个实例共用一个缓存的情况
-
-三：其它一些说明
-aCache可以用于get方法，但disableCache只能用于普通方法，不可用于get,set方法
+四：其它一些说明
+1. aCache可以用于get方法，但disableCache只能用于普通方法，不可用于get,set方法
+2. 一般情况下，即使不指定key等配置项，即便是代码压缩后，a-cache仍然可以正常使用，
+但是当我们针对一个静态方法使用aCache注解时，aCache有挺大概率失效。此时，必须指定key。
     
+注1：  
+
+注2：以下两种情形除外，①：；②：

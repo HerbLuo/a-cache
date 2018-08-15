@@ -50,7 +50,9 @@ export function disableCache(conf?: DisableCacheArgType) {
         type ConfigAndDataTuple = [DisableCacheConfig, L3ObjectInstanceCache | void]
 
         descriptor.value = function (...args: any[]) {
-            logger('disableACache : %s : %s : %o', target.constructor.name, methodName, l1);
+            logger('disableACache : %s : %s : %o',
+                target.constructor.name, methodName, l1);
+            const result = oldFunc.apply(this, args);
 
             const instanceMapParamsMapResults: Array<ConfigAndDataTuple> =
                 configs.map(config => {
@@ -106,7 +108,7 @@ export function disableCache(conf?: DisableCacheArgType) {
                     paramsMapResult.delete(params2key);
                 });
 
-            return oldFunc.apply(this, args);
+            return result
         };
     }
 }

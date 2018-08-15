@@ -1,6 +1,6 @@
 {
-  "name": "@closx/a-cache",
-  "version": "0.0.1-beta.2",
+  "name": "a-cache",
+  "version": "0.0.1-beta.1",
   "description": "a tool for cache and discache of the result of a call.  ",
   "main": "lib/index.js",
   "typings": "index.ts",
