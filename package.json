@@ -1,5 +1,5 @@
 {
-  "name": "a-cache",
+  "name": "@o2v/a-cache",
   "version": "0.0.1-beta.1",
   "description": "a tool for cache and discache of the result of a call.  ",
   "main": "lib/index.js",
@@ -12,7 +12,8 @@
   "scripts": {
     "dist": "SET NODE_ENV=production&& rollup -c ./rollup.config.js",
     "dist:dev": "rollup -c ./rollup.config.js",
-    "test": "npm run dist:dev && ava"
+    "test": "npm run dist:dev && ava",
+    "publish2npm": "npm run test && npm run dist && npm publish --access=public"
   },
   "author": "herbluo",
   "license": "MIT",
