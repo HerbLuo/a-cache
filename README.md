@@ -1,4 +1,4 @@
-###一：简介
+### 一：简介
 1. a-cache 是一个利用注解实现的缓存工具
 2. 它的特点是非常轻量级，不影响现有代码的逻辑结构
 3. 但a-cache 推荐在项目中 至少写一个单独的api层（注1）
@@ -9,8 +9,8 @@
 或  
 ```yarn add a-cache```
 
-###二：常规用法
-#####1. 最简单的缓存  
+### 二：常规用法
+##### 1. 最简单的缓存  
     
     如：下方fetchAllUser 在缓存失效前，不会多次发送请求
     ```javascript
@@ -33,7 +33,7 @@
     ```
     对于实例方法，在代码压缩后仍然正常使用，但要注意以下情况，详见 4.2
     
-#####2. 手动取消缓存  
+##### 2. 手动取消缓存  
     如： 如下方mergeUsers调用后（前），会清除当前实例下的所有缓存数据
     ```javascript
     import { aCache, disableCache } from '@o2v/a-cache'
@@ -54,7 +54,7 @@
     export default api
     ```
     
-#####3. 使用`key`来指定取消某种缓存  
+##### 3. 使用`key`来指定取消某种缓存  
     如：下方的mergeUser调用后，只会清空fetchAllUsers产生的缓存（因为他们的key都是UserApi:fetchAllUsers），
     而fetchUserIds产生的缓存，并不会删除。
     ```javascript
@@ -81,8 +81,8 @@
     export default api
     ```
 
-###三：更多用法
-#####1. 较为完整的用法  
+### 三：更多用法
+##### 1. 较为完整的用法  
     ```javascript
     import { aCache, disableCache } from "a-cache"
 
@@ -151,9 +151,9 @@
     // 实际使用中，并不建议创建多个实例
     const userApi2 = new UserApi()
     ```
-#####更多场景（多个类，多个实例下的相互作用等）见测试用例。
+##### 更多场景（多个类，多个实例下的相互作用等）见测试用例。
 
-###四：其它一些说明
+### 四：其它一些说明
 1. aCache可以用于get方法，  
 但disableCache只能用于普通方法，不可用于get,set方法
 2. 一般情况下，  
