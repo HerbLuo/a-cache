@@ -28,9 +28,9 @@ class UserApi {
 const api = new UserApi()
 export default api
 ```
-上述的`fetchAllUser`方法 在缓存失效前，不会多次发送请求
-对于实例方法，这种缓存机制，在代码压缩后仍然正常使用，
-但对于静态方法，要注意以下情况，详见 4.2
+上述的`fetchAllUser`方法 在缓存失效前，不会多次发送请求  
+对于实例方法，这种缓存机制，在代码压缩后仍然正常使用，  
+但对于静态方法，要注意以下情况，详见 4.2  
     
 ##### 2. 手动取消缓存  
 ```javascript
@@ -51,8 +51,8 @@ class UserApi {
 const api = new UserApi()
 export default api
 ```
-上方的`mergeUsers`调用后（未来会增加调用前的选项），
-会清除当前实例(实例：new之后的对象)下的所有缓存数据
+上方的`mergeUsers`调用后（未来会增加调用前的选项），  
+会清除当前实例(实例：new之后的对象)下的所有缓存数据  
     
 ##### 3. 使用`key`来指定取消某种缓存  
 ```javascript
@@ -78,9 +78,9 @@ class UserApi {
 const api = new UserApi()
 export default api
 ```
-上方的`mergeUser`调用后，只会清空`fetchAllUsers`产生的缓存
-（因为他们的key都是`UserApi:fetchAllUsers`），
-而`fetchUserIds`产生的缓存，并不会删除。
+上方的`mergeUser`调用后，只会清空`fetchAllUsers`产生的缓存  
+（因为他们的key都是`UserApi:fetchAllUsers`），  
+而`fetchUserIds`产生的缓存，并不会删除。  
 
 ### 三：更多用法
 ##### 1. 较为完整的用法  
@@ -156,12 +156,12 @@ const userApi2 = new UserApi()
 
 ### 四：其它一些说明
 1. aCache可以用于get方法，  
-但disableCache只能用于普通方法，不可用于get, set方法
+但disableCache只能用于普通方法，不可用于get, set方法  
 2. 一般情况下，  
 即使不指定任何配置项，当代码压缩后，a-cache仍然可以正常使用，  
 但是当我们针对一个静态方法使用aCache注解时，  
 代码压缩后，aCache有很大概率失效（取决于压缩后的方法名）。  
-此时，必须指定key。
+此时，必须指定key。  
  
 ```
 注1：  
