@@ -84,74 +84,74 @@ export default api
 
 ### 三：更多用法
 ##### 1. 较为完整的用法  
-    ```javascript
-    import { aCache, disableCache } from "a-cache"
+```javascript
+import { aCache, disableCache } from '@o2v/a-cache'
 
-    let times = 0
+let times = 0
 
-    class UserApi {
-      @aCache({
-        key: 'UserApi:fetchUser',
-        params2key: id => id
-      })
-      fetchUser (id) {
-        times ++
-        return Promise.resolve(UserApi.data[id])
-      }
+class UserApi {
+  @aCache({
+    key: 'UserApi:fetchUser',
+    params2key: id => id
+  })
+  fetchUser (id) {
+    times ++
+    return Promise.resolve(UserApi.data[id])
+  }
 
-      @aCache('UserApi:fetchUserIds')
-      fetchUserIds () {
-        times ++
-        return Promise.resolve(Object.keys(UserApi.data))
-      }
+  @aCache('UserApi:fetchUserIds')
+  fetchUserIds () {
+    times ++
+    return Promise.resolve(Object.keys(UserApi.data))
+  }
 
-      @aCache({
-        key: 'UserApi:fetchAll',
-        this2Key: 'single' // 实际使用时，建议将UserApi以对象的实例形式直接导出
-                           // 若如此做，无需配置此项
-      })
-      fetchAll () {
-        times ++
-        return Promise.resolve(Object.values(UserApi.data))
-      }
+  @aCache({
+    key: 'UserApi:fetchAll',
+    this2Key: 'single' // 实际使用时，建议将UserApi以对象的实例形式直接导出
+                       // 若如此做，无需配置此项
+  })
+  fetchAll () {
+    times ++
+    return Promise.resolve(Object.values(UserApi.data))
+  }
 
-      @disableCache([
-        'UserApi:fetchAll',
-        {
-          key: 'UserApi:fetchUser',
-          params2key: user => user.id
-        }
-      ])
-      mergeUser (user) {
-        return this.fetchUser(user.id)
-          .then(oldUser => Object.assign({}, oldUser, user))
-          .then(this.saveUser)
-      }
-
-      @disableCache([
-        'UserApi:fetchUserIds',
-        'UserApi:fetchAll',
-        {
-          key: 'UserApi:fetchUser',
-          params2key: user => user.id
-        }
-      ])
-      saveUser (user) {
-        UserApi.data[user.id] = user
-        return Promise.resolve(1)
-      }
-
-      static data = {
-        'uHt5z': {id: 'uHt5z', name: 'XaoMin', age: 22},
-        'p3mUa': {id: 'p3mUa', name: 'DaXon', age: 21},
-        'q8llb': {id: 'q8llb', name: 'LaoZan', age: 20}
-      }
+  @disableCache([
+    'UserApi:fetchAll',
+    {
+      key: 'UserApi:fetchUser',
+      params2key: user => user.id
     }
+  ])
+  mergeUser (user) {
+    return this.fetchUser(user.id)
+      .then(oldUser => Object.assign({}, oldUser, user))
+      .then(this.saveUser)
+  }
 
-    export const userApi = new UserApi()
-    // 实际使用中，并不建议创建多个实例
-    const userApi2 = new UserApi()
-    ```
+  @disableCache([
+    'UserApi:fetchUserIds',
+    'UserApi:fetchAll',
+    {
+      key: 'UserApi:fetchUser',
+      params2key: user => user.id
+    }
+  ])
+  saveUser (user) {
+    UserApi.data[user.id] = user
+    return Promise.resolve(1)
+  }
+
+  static data = {
+    'uHt5z': {id: 'uHt5z', name: 'XaoMin', age: 22},
+    'p3mUa': {id: 'p3mUa', name: 'DaXon', age: 21},
+    'q8llb': {id: 'q8llb', name: 'LaoZan', age: 20}
+  }
+}
+
+export const userApi = new UserApi()
+// 实际使用中，并不建议创建多个实例
+const userApi2 = new UserApi()
+```
 ##### 更多场景（多个类，多个实例下的相互作用等）见测试用例。
 
 ### 四：其它一些说明
