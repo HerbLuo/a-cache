@@ -6,7 +6,7 @@ interface ACacheConfig {
     key?: string;       // 默认从类名方法名提取，注意压缩后的代码可能出现意外情况
     // logger?: Function   // 输出日志的方法
     this2Key?: (that: any) => any; // 禁止返回object类型
-    params2key?: ((params: any[]) => void) | string;
+    params2key?: Function | string;
 }
 
 function formatConfig(config: string | ACacheConfig): ACacheConfig {
