@@ -12,7 +12,7 @@
     "dist": "SET NODE_ENV=production&& rollup -c ./rollup.config.js",
     "dist:dev": "rollup -c ./rollup.config.js",
     "test": "npm run dist:dev && ava",
-    "publish2npm": "npm run dist && npm run test && npm publish --access=public"
+    "publish2npm": "npm run test && npm run dist && npm publish --access=public"
   },
   "author": "herbluo",
   "license": "MIT",
