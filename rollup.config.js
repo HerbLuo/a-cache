@@ -1,6 +1,9 @@
-import rollupTypescript from 'rollup-plugin-typescript'
-import typescript from 'typescript'
+import path from 'path'
+import fse from 'fs-extra'
+import rollupTypescript from 'rollup-plugin-typescript2'
 import replace from 'rollup-plugin-replace'
+
+fse.emptyDirSync(path.join(__dirname, './typings'))
 
 export default {
   input: 'index.ts',
@@ -28,7 +31,7 @@ export default {
   },
   plugins: [
     rollupTypescript({
-      typescript
+      useTsconfigDeclarationDir: true
     }),
     replace({
       exclude: 'node_modules/**',

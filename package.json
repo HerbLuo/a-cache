@@ -1,28 +1,28 @@
 {
   "name": "@o2v/a-cache",
-  "version": "0.0.1-beta.3",
+  "version": "0.0.1-beta.4",
   "description": "a tool for cache and discache of the result of a call.  ",
   "main": "lib/index.js",
-  "typings": "index.ts",
+  "typings": "typings/index.d.ts",
   "files": [
     "lib",
-    "src",
-    "index.ts"
+    "typings"
   ],
   "scripts": {
     "dist": "SET NODE_ENV=production&& rollup -c ./rollup.config.js",
     "dist:dev": "rollup -c ./rollup.config.js",
     "test": "npm run dist:dev && ava",
-    "publish2npm": "npm run test && npm run dist && npm publish --access=public"
+    "publish2npm": "npm run dist && npm run test && npm publish --access=public"
   },
   "author": "herbluo",
   "license": "MIT",
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.0.0-beta.51",
     "ava": "1.0.0-beta.6",
+    "fs-extra": "^7.0.0",
     "rollup": "^0.62.0",
     "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-typescript": "^0.8.1",
+    "rollup-plugin-typescript2": "^0.17.1",
     "ts-node": "^7.0.0",
     "typescript": "^2.9.2"
   },
@@ -44,5 +44,6 @@
     "require": [
       "ts-node/register"
     ]
-  }
+  },
+  "dependencies": {}
 }
