@@ -37,6 +37,10 @@
     "decorators"
   ],
   "ava": {
+    "files": [
+      "test/*.js",
+      "!test/utils/*.js"
+    ],
     "compileEnhancements": false,
     "extensions": [
       "ts"
