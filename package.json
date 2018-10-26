@@ -1,17 +1,19 @@
 {
   "name": "@o2v/a-cache",
-  "version": "0.0.1-beta.5",
+  "version": "0.1.0-beta.1",
   "description": "a tool for cache and discache of the result of a call.  ",
   "main": "lib/index.js",
+  "module": "lib/index.esm.js",
+  "unkpg": "lib/index.umd.js",
   "typings": "typings/index.d.ts",
   "files": [
     "lib",
     "typings"
   ],
   "scripts": {
-    "dist": "SET NODE_ENV=production&& rollup -c ./rollup.config.js",
-    "dist:dev": "rollup -c ./rollup.config.js",
     "test": "npm run dist:dev && ava",
+    "dist:tsc": "rimraf typings tsc-out lib && tsc",
+    "dist": "npm run dist:tsc && SET NODE_ENV=production&& rollup -c ./rollup.config.js",
     "publish2npm": "npm run test && npm run dist && npm publish --access=public"
   },
   "author": "herbluo",
@@ -20,6 +22,7 @@
     "@babel/plugin-proposal-decorators": "^7.0.0-beta.51",
     "ava": "1.0.0-beta.6",
     "fs-extra": "^7.0.0",
+    "rimraf": "^2.6.2",
     "rollup": "^0.62.0",
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-typescript2": "^0.17.1",
